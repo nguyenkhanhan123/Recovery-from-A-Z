@@ -1,0 +1,23 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.RECOVERYFROMATOZ" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/splash</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+    <style name="CustomDialogStyle" parent="@style/Base.Theme.RECOVERYFROMATOZ">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/splash</item>
+        <item name="colorPrimaryVariant">@color/splash</item>
+        <item name="colorOnPrimary">@color/splash</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/splash</item>
+        <item name="colorSecondaryVariant">@color/splash</item>
+        <item name="colorOnSecondary">@color/splash</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/splash</item>
+    </style>
+</resources>
