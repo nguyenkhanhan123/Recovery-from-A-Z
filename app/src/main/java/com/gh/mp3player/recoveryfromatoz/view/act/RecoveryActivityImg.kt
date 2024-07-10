@@ -5,20 +5,26 @@ import android.content.ContentUris
 import android.database.Cursor
 import android.provider.MediaStore
 import android.util.Log
-import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.gh.mp3player.recoveryfromatoz.PaginationScrollListener
 import com.gh.mp3player.recoveryfromatoz.databinding.RecoveryActivityImgBinding
 import com.gh.mp3player.recoveryfromatoz.model.ImageModel
 import com.gh.mp3player.recoveryfromatoz.view.adapter.ImageAdapter
-import com.gh.mp3player.recoveryfromatoz.view.adapter.VideoAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class RecoveryActivityImg : BaseActivity<RecoveryActivityImgBinding>() {
+    private var isLoading = false
+    private var isLastPage = false
+    private var currentPage = 1
+    private val pageSize = 12
+    private var totalPage = 0
+
     override fun initView() {
         mbinding.icBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
@@ -26,19 +32,75 @@ class RecoveryActivityImg : BaseActivity<RecoveryActivityImgBinding>() {
         CoroutineScope(Dispatchers.Main).launch {
             val normalImages = withContext(Dispatchers.IO) { loadNormalImages() }
             val trashImages = withContext(Dispatchers.IO) { loadTrashImages() }
+
+            totalPage = (normalImages.size + pageSize - 1) / pageSize
+
             if (normalImages.isNotEmpty()) {
-                mbinding.rvRecovery.adapter = ImageAdapter(normalImages, this@RecoveryActivityImg)
+                val itemDecoration: RecyclerView.ItemDecoration =
+                    DividerItemDecoration(this@RecoveryActivityImg, DividerItemDecoration.VERTICAL)
+                mbinding.rvRecovery.addItemDecoration(itemDecoration)
+
+                setFirstData()
+
+                val gridLayoutManager = GridLayoutManager(this@RecoveryActivityImg, 3)
+                mbinding.rvRecovery.layoutManager = gridLayoutManager
+
+                val paginationScrollListener = object : PaginationScrollListener(gridLayoutManager) {
+                    override fun loadMoreItems() {
+                        isLoading = true
+                        currentPage += 1
+                        loadNextPage()
+                    }
+
+                    override fun isLoading(): Boolean = isLoading
+
+                    override fun isLastPage(): Boolean = isLastPage
+                }
+                mbinding.rvRecovery.addOnScrollListener(paginationScrollListener)
+
+
+
                 Toast.makeText(
                     this@RecoveryActivityImg,
-                    "Ảnh bình thường: ${normalImages.size},Ảnh trong rác : ${trashImages.size}",
+                    "Ảnh bình thường: ${normalImages.size}, Ảnh trong rác : ${trashImages.size}",
                     Toast.LENGTH_SHORT
                 ).show()
             } else {
                 Toast.makeText(
                     this@RecoveryActivityImg,
-                    "Không tìm thấy ảnh bình thường,Ảnh trong rác : ${trashImages.size}",
+                    "Không tìm thấy ảnh bình thường, Ảnh trong rác : ${trashImages.size}",
                     Toast.LENGTH_SHORT
                 ).show()
+            }
+        }
+    }
+
+    private fun setFirstData() {
+        val list = getListImageModel()
+        val adapter = ImageAdapter(list, this@RecoveryActivityImg, false)
+        mbinding.rvRecovery.adapter = adapter
+
+        if (currentPage < totalPage) {
+            adapter.addFooterLoading()
+        } else {
+            isLastPage = true
+        }
+    }
+
+    private fun loadNextPage() {
+        CoroutineScope(Dispatchers.Main).launch {
+            val nextPageImages = withContext(Dispatchers.IO) { getListImageModel() }
+            val adapter = mbinding.rvRecovery.adapter as ImageAdapter
+            adapter.list.addAll(nextPageImages)
+            adapter.removeFooterLoading()
+            adapter.notifyItemRangeInserted((currentPage - 1) * pageSize, nextPageImages.size)
+
+            isLoading = false
+            if (currentPage < totalPage) {
+                adapter.addFooterLoading()
+            }
+            else{
+                isLastPage=true
             }
         }
     }
@@ -47,8 +109,15 @@ class RecoveryActivityImg : BaseActivity<RecoveryActivityImgBinding>() {
         return RecoveryActivityImgBinding.inflate(layoutInflater)
     }
 
+    private fun getListImageModel(): MutableList<ImageModel> {
+        val images = loadNormalImages()
+        val fromIndex = (currentPage - 1) * pageSize
+        val toIndex = (currentPage * pageSize).coerceAtMost(images.size)
+        return images.subList(fromIndex, toIndex).toMutableList()
+    }
+
     @SuppressLint("Recycle", "Range")
-    private fun loadNormalImages(): List<ImageModel> {
+    private fun loadNormalImages(): MutableList<ImageModel> {
         val imageList = mutableListOf<ImageModel>()
         val projection = arrayOf(
             MediaStore.Images.Media._ID,
@@ -82,7 +151,7 @@ class RecoveryActivityImg : BaseActivity<RecoveryActivityImgBinding>() {
     }
 
     @SuppressLint("Recycle", "Range")
-    private fun loadTrashImages(): List<ImageModel> {
+    private fun loadTrashImages(): MutableList<ImageModel> {
         val imageList = mutableListOf<ImageModel>()
         val projection = arrayOf(
             MediaStore.Images.Media._ID,
