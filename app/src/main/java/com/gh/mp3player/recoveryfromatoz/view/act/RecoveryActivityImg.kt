@@ -13,6 +13,7 @@ import com.gh.mp3player.recoveryfromatoz.PaginationScrollListener
 import com.gh.mp3player.recoveryfromatoz.databinding.RecoveryActivityImgBinding
 import com.gh.mp3player.recoveryfromatoz.model.ImageModel
 import com.gh.mp3player.recoveryfromatoz.view.adapter.ImageAdapter
+import com.gh.mp3player.recoveryfromatoz.view.adapter.VideoAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,7 +23,7 @@ class RecoveryActivityImg : BaseActivity<RecoveryActivityImgBinding>() {
     private var isLoading = false
     private var isLastPage = false
     private var currentPage = 1
-    private val pageSize = 12
+    private val pageSize = 36
     private var totalPage = 0
 
     override fun initView() {
@@ -58,8 +59,6 @@ class RecoveryActivityImg : BaseActivity<RecoveryActivityImgBinding>() {
                 }
                 mbinding.rvRecovery.addOnScrollListener(paginationScrollListener)
 
-
-
                 Toast.makeText(
                     this@RecoveryActivityImg,
                     "Ảnh bình thường: ${normalImages.size}, Ảnh trong rác : ${trashImages.size}",
@@ -77,12 +76,10 @@ class RecoveryActivityImg : BaseActivity<RecoveryActivityImgBinding>() {
 
     private fun setFirstData() {
         val list = getListImageModel()
-        val adapter = ImageAdapter(list, this@RecoveryActivityImg, false)
+        val adapter = ImageAdapter(list, this@RecoveryActivityImg)
         mbinding.rvRecovery.adapter = adapter
 
-        if (currentPage < totalPage) {
-            adapter.addFooterLoading()
-        } else {
+        if (currentPage >= totalPage) {
             isLastPage = true
         }
     }
@@ -92,14 +89,9 @@ class RecoveryActivityImg : BaseActivity<RecoveryActivityImgBinding>() {
             val nextPageImages = withContext(Dispatchers.IO) { getListImageModel() }
             val adapter = mbinding.rvRecovery.adapter as ImageAdapter
             adapter.list.addAll(nextPageImages)
-            adapter.removeFooterLoading()
             adapter.notifyItemRangeInserted((currentPage - 1) * pageSize, nextPageImages.size)
-
             isLoading = false
-            if (currentPage < totalPage) {
-                adapter.addFooterLoading()
-            }
-            else{
+            if (currentPage >= totalPage) {
                 isLastPage=true
             }
         }

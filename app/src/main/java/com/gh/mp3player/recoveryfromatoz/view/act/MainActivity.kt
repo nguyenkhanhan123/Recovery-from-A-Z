@@ -2,6 +2,8 @@ package com.gh.mp3player.recoveryfromatoz.view.act
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.gh.mp3player.recoveryfromatoz.R
 import com.gh.mp3player.recoveryfromatoz.databinding.ActivityMainBinding
 import com.gh.mp3player.recoveryfromatoz.view.fragment.MainFragment
@@ -13,6 +15,7 @@ import kotlinx.coroutines.launch
 
 
 class MainActivity : BaseActivity<ActivityMainBinding>() {
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun initView() {
         if (packageManager.checkPermission(
                 Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -20,11 +23,14 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             ) != PackageManager.PERMISSION_GRANTED || packageManager.checkPermission(
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 packageName
+            ) != PackageManager.PERMISSION_GRANTED ||packageManager.checkPermission(
+                Manifest.permission.POST_NOTIFICATIONS,
+                packageName
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             requestPermissions(
                 arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.POST_NOTIFICATIONS
                 ), 101
             )
         } else {

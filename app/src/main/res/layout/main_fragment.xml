@@ -19,6 +19,7 @@
             tools:ignore="UselessParent">
 
             <ImageView
+                android:id="@+id/iv_show_list"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_gravity="center"
@@ -32,7 +33,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="8"
                 android:gravity="center"
-                android:text="@string/app_name2"
+                android:text="@string/app_name"
                 android:textColor="@color/strong_blue"
                 android:textSize="22sp"
                 tools:ignore="HardcodedText"
@@ -244,6 +245,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ll_start"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
@@ -257,8 +259,8 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/item_group"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
                 android:layout_gravity="center"
                 android:layout_marginHorizontal="15dp"
                 android:orientation="vertical"
@@ -277,21 +279,14 @@
 
             <TextView
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:fontFamily="@font/splash"
                 android:gravity="center"
-                android:text="@string/app_name"
+                android:text="@string/app_name2"
                 android:textColor="@color/strong_blue"
-                android:textSize="19sp" />
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_margin="5dp"
-                android:src="@drawable/ic_back"
-                tools:ignore="ContentDescription" />
+                android:textSize="16sp" />
         </TableRow>
 
         <View

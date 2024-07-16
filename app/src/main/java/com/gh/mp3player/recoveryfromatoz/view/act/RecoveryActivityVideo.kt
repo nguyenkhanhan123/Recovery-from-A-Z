@@ -4,15 +4,12 @@ import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.database.Cursor
 import android.net.Uri
-import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.gh.mp3player.recoveryfromatoz.databinding.RecoveryActivityImgBinding
 import com.gh.mp3player.recoveryfromatoz.model.ImageModel
-import com.gh.mp3player.recoveryfromatoz.view.adapter.ImageAdapter
 import com.gh.mp3player.recoveryfromatoz.view.adapter.VideoAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
